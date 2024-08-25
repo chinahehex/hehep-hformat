@@ -118,7 +118,7 @@ class ExampleTest extends TestCase
             ['roleId',[['dict','name'=>'roleName','data'=>[[$user, 'getRoles']]]], 'alias'=>'roleName_text']
         ]);
 
-        var_dump(var_export($data, true));
+        //var_dump(var_export($data, true));
     }
 
     public function testFormat()
@@ -132,6 +132,6 @@ class ExampleTest extends TestCase
 
         $data = $this->hformat->format($users,[UserFormat::defaultFormat(),['hit_num','buy_num']]);
 
-        var_dump($data);
+        //var_dump($data);
     }
 }

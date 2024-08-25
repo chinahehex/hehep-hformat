@@ -13,7 +13,7 @@ class DefaultFormator
      */
     public static function resFormator(string $value):string
     {
-        return 'http://www.hehex.cn' . $value;
+        return 'http://www.hehex.cn/' . $value;
     }
 
 }

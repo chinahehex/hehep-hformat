@@ -29,7 +29,7 @@ class AnnTest extends TestCase
     public function testRes()
     {
         $img_url = $this->hformat->res('a/b/a.jpg');
-        $this->assertSame('1a/b/a.jpg',$img_url);
+        $this->assertSame('http://www.hehex.cn/a/b/a.jpg',$img_url);
     }
 
     public function testUrl()

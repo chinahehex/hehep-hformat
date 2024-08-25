@@ -355,9 +355,9 @@ class CommonFormator
 ## 默认格式器
 格式器 | 说明 | 规则示例
 ----------|-------------|------------
-`jsonEncode`  | 数组json | `['fieldname', ['json'] ]`
-`jsonDecode`  |json字符串转数组 | `['fieldname', ['json_decode'] ]`
+`jsonEncode`  | 数组json | `['fieldname', ['jsonEncode'] ]`
+`jsonDecode`  |json字符串转数组 | `['fieldname', ['jsonDecode'] ]`
 `date`  | 日期格式 | `['fieldname', ['date','format'=>'日期格式'] ]`
-`toArr`  | 字符串转数组 | `['fieldname', ['to_arr'] ]`
+`toArr`  | 字符串转数组 | `['fieldname', ['toArr'] ]`
 `trim`  | 字符串去掉两边空格 | `['fieldname', ['trim'] ]`
-`dict`  | 数组列值转换 | `['fieldname', ['dict','dic_id'=>'','dic_name'=>'']' ]`
+`dict`  | 数组列值转换 | `['fieldname', ['dict','id'=>'','name'=>''] ]`

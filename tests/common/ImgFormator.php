@@ -1,7 +1,7 @@
 <?php
 namespace hformat\tests\common;
 
-use hehe\core\hformat\annotation\Formator;
+
 
 class ImgFormator
 {
@@ -12,7 +12,7 @@ class ImgFormator
      */
     public static function resFormator(string $value):string
     {
-        return 'http://www.hehex.cn' . $value;
+        return 'http://www.hehex.cn/' . $value;
     }
 
 }
