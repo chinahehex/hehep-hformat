@@ -1,0 +1,23 @@
+﻿{
+	"name": "hehep/hformat",
+	"description": "hehep-hformat 是一个PHP 验证器工具组件",
+	"license": "Apache-2.0",
+	"authors": [
+		{
+			"name": "hehe"
+		}
+	],
+	"require": {
+		"php": ">=7.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"hformat\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"hformat\\test": "tests/"
+		}
+	}
+}
