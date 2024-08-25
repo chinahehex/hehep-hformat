@@ -104,24 +104,21 @@ class ExampleTest extends TestCase
         ];
 
         $user = new User();
-
         $data = $this->hformat->doFormat($users,[
             // 状态数值转状态文本
-//            ['status',[['cdict','func'=>'showStatus']], 'alias'=>':_text' ],
-
+            ['status',[['dict','data'=> [[User::class,'showStatus']] ]], 'alias'=>':_text' ],
             // 日期转换
             ['ctime',[['date','format'=>'Y年m月d日 H:i']] ],
-
             // 头像短地址转长地址(http)
-//            ['headPortrait',[['trim'],['res']], 'alias'=>':_url' ],
+            ['headPortrait',[['trim'],['res']], 'alias'=>':_url' ],
             // 获取此id对应访问量
-            ['id',[['dict','name'=>'hit_num','data'=>[[$user, 'totalAdminNewsNum']]]],'alias'=>'hit_num'],
-            ['id',[['dict','name'=>'buy_num','data'=>[[$user, 'totalAdminNewsNum']]]],'alias'=>'buy_num'],
+            ['hit_num',[['dict','name'=>'hit_num','data'=>[[$user, 'totalAdminNewsNum']]]],'dataid'=>'id','alias'=>'hit_num'],
+            ['buy_num',[['dict','name'=>'buy_num','data'=>[[$user, 'totalAdminNewsNum']]]],'dataid'=>'id','alias'=>'buy_num'],
             // 角色ID值转角色名称
             ['roleId',[['dict','name'=>'roleName','data'=>[[$user, 'getRoles']]]], 'alias'=>'roleName_text']
         ]);
 
-        //var_dump($data);
+        var_dump(var_export($data, true));
     }
 
     public function testFormat()

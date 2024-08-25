@@ -12,7 +12,7 @@ class ImgFormator
      */
     public static function resFormator(string $value):string
     {
-        return '1' . $value;
+        return 'http://www.hehex.cn' . $value;
     }
 
 }

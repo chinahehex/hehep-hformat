@@ -22,5 +22,4 @@ class DateFormator extends Formator
 
         return date($format,strtotime($value));
     }
-
 }

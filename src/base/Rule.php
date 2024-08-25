@@ -70,11 +70,6 @@ class Rule
         return $this->dataid !== '' ? $this->dataid : $this->name;
     }
 
-    public function delkey()
-    {
-
-    }
-
     /**
      * 获取新字段名称
      * @return string

@@ -1,12 +1,12 @@
 <?php
 namespace hformat\tests\common;
 
-use hehe\core\hformat\annotation\Formator;
+use hehe\core\hformat\annotation\AnnFormator;
 
 /**
  * Class UrlFormator
  * @package hformat\tests\common
- * @Formator()
+ * @AnnFormator()
  */
 class UrlFormator
 {

@@ -137,11 +137,9 @@ class FormatManager
      * @param string|array $func 格式函数
      * @return $this
      */
-    public function addFormator(string $alias,$func):self
+    public static function addFormator(string $alias,$func):void
     {
         static::$formators[$alias] = $func;
-
-        return $this;
     }
 
     public static function addFormators(array $formators):void

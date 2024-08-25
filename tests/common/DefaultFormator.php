@@ -1,7 +1,7 @@
 <?php
 namespace hformat\tests\common;
 
-use hehe\core\hformat\annotation\Formator;
+use hehe\core\hformat\annotation\AnnFormator;
 
 class DefaultFormator
 {
@@ -9,11 +9,11 @@ class DefaultFormator
     /**
      * @param string $value
      * @return string
-     * @Formator()
+     * @AnnFormator()
      */
     public static function resFormator(string $value):string
     {
-        return '1' . $value;
+        return 'http://www.hehex.cn' . $value;
     }
 
 }

@@ -9,7 +9,7 @@ use hehe\core\hformat\Utils;
  */
 #[Annotation("hehe\core\hformat\annotation\FormatorAnnotationProcessor")]
 #[Attribute]
-class Formator
+class AnnFormator
 {
     /**
      * 事件名称
