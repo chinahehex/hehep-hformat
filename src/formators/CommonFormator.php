@@ -3,6 +3,9 @@ namespace hehe\core\hformat\formators;
 
 use hehe\core\hformat\base\Formator;
 
+/**
+ * 通用格式化集合器
+ */
 class CommonFormator
 {
 
@@ -28,6 +31,11 @@ class CommonFormator
     public static function jsonEncodeFormator($value)
     {
         return json_encode($value,true);
+    }
+
+    public static function dateFormator(string $value,string $format = 'Y-m-d')
+    {
+        return date($format,strtotime($value));
     }
 
 

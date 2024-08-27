@@ -21,6 +21,12 @@ class Formator
      */
     protected $func;
 
+    /**
+     * 方法参数
+     * @var array
+     */
+    protected $params = [];
+
     public function __construct(array $attrs = [])
     {
         if (!empty($attrs)) {
@@ -73,6 +79,10 @@ class Formator
      */
     public function getValue(...$params)
     {
+        if (!empty($this->params)) {
+            array_push($params,...$this->params);
+        }
+
         $value = call_user_func_array($this->func,$params);
 
         return $value;

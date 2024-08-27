@@ -1,8 +1,8 @@
 <?php
 namespace hformat\tests\units;
 use hehe\core\hformat\base\Formator;
+use hehe\core\hformat\Format;
 use hehe\core\hformat\formators\CommonFormator;
-use hehe\core\hformat\formators\DateFormator;
 use hformat\tests\common\User;
 use hformat\tests\common\UserFormat;
 use hformat\tests\common\UserFormator;
@@ -47,6 +47,18 @@ class ExampleTest extends TestCase
         $this->assertSame('2000',$value);
 
         $value = $this->hformat->date('2000-01-01','Y年m月d日');
+        $this->assertSame('2000年01月01日',$value);
+    }
+
+    public function testDate1()
+    {
+        $value = Format::date('2000-01-01');
+        $this->assertSame('2000-01-01',$value);
+
+        $value = Format::date('2000-01-01','Y');
+        $this->assertSame('2000',$value);
+
+        $value = Format::date('2000-01-01','Y年m月d日');
         $this->assertSame('2000年01月01日',$value);
     }
 
@@ -108,7 +120,7 @@ class ExampleTest extends TestCase
             // 状态数值转状态文本
             ['status',[['dict','data'=> [[User::class,'showStatus']] ]], 'alias'=>':_text' ],
             // 日期转换
-            ['ctime',[['date','format'=>'Y年m月d日 H:i']] ],
+            ['ctime',[['date','params'=>['Y年m月d日 H:i']]] ],
             // 头像短地址转长地址(http)
             ['headPortrait',[['trim'],['res']], 'alias'=>':_url' ],
             // 获取此id对应访问量
@@ -119,6 +131,11 @@ class ExampleTest extends TestCase
         ]);
 
         //var_dump(var_export($data, true));
+
+        $this->assertSame('2018年01月01日 12:00',$data[0]['ctime']);
+        $this->assertSame('禁用',$data[1]['status_text']);
+        $this->assertSame('普通用户',$data[2]['roleName_text']);
+        $this->assertSame(11,$data[2]['hit_num']);
     }
 
     public function testFormat()
@@ -130,8 +147,28 @@ class ExampleTest extends TestCase
             ['id'=>3,'name'=>'hehe3','status'=>3,'ctime'=>'2018-01-01 12:00:00','roleId'=>3,'headPortrait'=>'/a/b/c3.jpg'],
         ];
 
-        $data = $this->hformat->format($users,[UserFormat::defaultFormat(),['hit_num','buy_num']]);
+        $data = $this->hformat->doCustomformat($users,[UserFormat::defaultFormat(),['hit_num','buy_num']]);
 
-        //var_dump($data);
+        $this->assertSame('2018年01月01日 12:00',$data[0]['ctime']);
+        $this->assertSame('禁用',$data[1]['status_text']);
+        $this->assertSame('普通用户',$data[2]['roleName_text']);
+        $this->assertSame(11,$data[2]['hit_num']);
+    }
+
+    public function testFormat1()
+    {
+
+        $users = [
+            ['id'=>1,'name'=>'hehe1','status'=>1,'ctime'=>'2018-01-01 12:00:00','roleId'=>1,'headPortrait'=>'/a/b/c1.jpg'],
+            ['id'=>2,'name'=>'hehe2','status'=>2,'ctime'=>'2018-01-01 12:00:00','roleId'=>2,'headPortrait'=>'/a/b/c2.jpg'],
+            ['id'=>3,'name'=>'hehe3','status'=>3,'ctime'=>'2018-01-01 12:00:00','roleId'=>3,'headPortrait'=>'/a/b/c3.jpg'],
+        ];
+
+        $data = Format::doCustomformat($users,[UserFormat::defaultFormat(),['hit_num','buy_num']]);
+
+        $this->assertSame('2018年01月01日 12:00',$data[0]['ctime']);
+        $this->assertSame('禁用',$data[1]['status_text']);
+        $this->assertSame('普通用户',$data[2]['roleName_text']);
+        $this->assertSame(11,$data[2]['hit_num']);
     }
 }

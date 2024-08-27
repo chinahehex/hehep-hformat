@@ -26,7 +26,7 @@ class DictFormator extends Formator
     protected $cache = '';
 
     /**
-     * 字典数据集合(二维数组)
+     * 获取字典数据方法
      * @var array
      */
     protected $data;
@@ -56,11 +56,10 @@ class DictFormator extends Formator
     {
         if (is_null($this->_data)) {
             $column_values  = Utils::getColumn($datas,$rule->getDataId());
-            $data_func_name = $this->data[0];
-            $data_func_params = isset($this->data[1]) ? $this->data[1] : [];
+            $data_func_params = array_slice($this->data, 1);
             // 插入函数参数
             array_unshift($data_func_params,$column_values);
-            $this->setData(call_user_func_array($data_func_name,$data_func_params));
+            $this->setData(call_user_func_array($this->data[0],$data_func_params));
         }
 
         return $this->_data;

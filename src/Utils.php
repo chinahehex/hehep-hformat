@@ -1,6 +1,8 @@
 <?php
 namespace hehe\core\hformat;
 
+use hehe\core\hformat\base\Formator;
+
 class Utils
 {
     /**
@@ -215,6 +217,43 @@ class Utils
         } else {
             return [$class,$method];
         }
+    }
+
+    public static function buildFormatCollector(string $formatCollector):array
+    {
+        $formators = [];
+        if (strpos($formatCollector,"@@") !== false) {
+            list($formatorClass,$method) = explode("@@",$formatCollector);
+            $formators = call_user_func([$formatorClass,$method]);
+        } else if (strpos($formatCollector,"@") !== false) {
+            list($formatorClass,$method) = explode("@",$formatCollector);
+            $formators = call_user_func([new $formatorClass(),$method]);
+        } else {
+            $formatorClass = $formatCollector;
+            if (is_subclass_of($formatorClass,Formator::class)) {
+                $formators[lcfirst(substr((new \ReflectionClass($formatorClass))->getShortName(),0,-8))] = $formatorClass;
+            } else {
+                if (method_exists($formatorClass,'handle')) {
+                    $formators = call_user_func([new $formatorClass(),'handle']);
+                }
+            }
+        }
+
+        // 获取格式器方法
+        $reflectionClass = new \ReflectionClass($formatorClass);
+        foreach ($reflectionClass->getMethods() as $reflectionMethod) {
+            $method = $reflectionMethod->getName();
+            if (substr($method,-8) === 'Formator') {
+                $alias = substr($method,0,-8);
+            } else {
+                $alias = $method;
+            }
+
+            $func = $formatorClass . ($reflectionMethod->isStatic() ?  '@@' . $method : '@' . $method);
+            $formators[$alias] = $func;
+        }
+
+        return $formators;
     }
 
     /**

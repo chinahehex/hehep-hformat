@@ -3,9 +3,9 @@
 
 namespace hformat\tests\common;
 
-use hehe\core\hformat\formators\DateFormator;
+use hehe\core\hformat\base\Formator;
 
-class UserFormator extends DateFormator
+class UserFormator extends Formator
 {
 
 }

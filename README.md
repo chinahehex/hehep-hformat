@@ -22,6 +22,17 @@ composer require hehex/hehep-hformat
 ```
 
 ## 组件配置
+```php
+$formatConf = [
+    // 定义格式化集合器
+    'formatCollectors'=>[
+        'hehe\core\hformat\formators\CommonFormator'
+    ],
+];
+
+
+```
+
 **格式器规则:**
 ```
 ['规则名称',[['格式器1','格式器1属性1'=>'','格式1属性2'=>''],['格式器2','格式器2属性1'=>'','格式器2属性2'=>''] ],'格式规则属性1'=>'','格式规则属性2'=>''],
@@ -52,6 +63,18 @@ data:字典数据来源,格式:[['类名获对象','方法'],'方法参数1','�
 ```
 
 ## 常规格式化示例
+- 常规格式化规则
+```
+['规则名称',[['格式器1','格式器1属性1'=>'','格式1属性2'=>''],['格式器2','格式器2属性1'=>'','格式器2属性2'=>''] ],'格式规则属性1'=>'','格式规则属性2'=>''],
+
+属性:
+name:规则名称
+alias:别名,即新的键名,指定新键名,"status_xxxx_name",":_text2" 冒号表示原始键名,比如"status_text2"
+defval:如格式器无对应值,则为默认值
+dataid:数据id键名,如未设置,则默认读取name 
+ 
+```
+
 - 定义数据源
 ```php
 // 数据源定义
@@ -105,7 +128,7 @@ $data = $hformat->doFormat($users,[
     // 状态数值转状态文本
     ['status',[['dict','data'=> [[UserData::class,'showStatus']] ]], 'alias'=>':_text' ],
     // 日期转换
-    ['ctime',[['date','format'=>'Y年m月d日 H:i']] ],
+    ['ctime',[['date','params'=>['Y年m月d日 H:i'] ]] ],
     // 头像短地址转长地址(http)
     ['headPortrait',[['trim'],['res']], 'alias'=>':_url' ],
     // 统计访问量,统计购买量
@@ -160,7 +183,7 @@ $users = [
 ];
 
 $hformat = new FormatManager();
-$data = $hformat->format($users,[UserFormat::defaultFormat(),['hit_num']]);
+$data = $hformat->doCustomformat($users,[UserFormat::defaultFormat(),['hit_num']]);
 
 // 输出数据
 $data = [
@@ -173,6 +196,14 @@ $data = [
 ```
 
 ## 格式器
+- 说明
+```
+基类: `hehe\core\hformat\base\Formator`, 格式器类必须继承该基类,并实现`getValue`方法
+属性:
+`$alias`:格式器别名,默认为方法名,如:`trim`
+`$params`:格式器方法参数,如:date($value,$format = 'Y-m-d'),参数必须放在数组中,如:['date','params'=>['Y-m-d']]
+```
+
 - 格式器定义
 ```php
 namespace hehe\core\hformat\formators;
@@ -203,7 +234,31 @@ class DateFormator extends Formator
 
 ```
 
-- 定义类格式器
+- 注册格式器
+```php
+use hehe\core\hformat\FormatManager;
+
+FormatManager::addFormator('date',DateFormator::class);
+FormatManager::addFormators(['date'=>DateFormator::class]);
+
+```
+
+
+## 格式化集合器
+- 说明
+```
+集合器:带后缀"Formator"的方法默认都是"hehe\core\hformat\base\Formator"类格式器,如:trimFormator
+属性:
+`$alias`:格式器别名,默认为方法名,如:`trim`
+`$params`:格式器方法参数,如:date($value,$format = 'Y-m-d'),参数必须放在数组中,如:['date','params'=>['Y-m-d']]
+`$func`:格式器方法,格式如下:
+    类静态方法方式:common\extend\formats\CustomFormats@@res
+    对象方法方式:common\extend\formats\CustomFormats@res
+    数组函数方式:['对象','方法名']
+    闭包方式:function($value){return $value;}
+```
+
+- 定义格式化集合器
 ```php
 class CommonFormator
 {
@@ -236,17 +291,28 @@ class CommonFormator
     }
 }
 ```
-- 注册格式器
+- 注册格式化集合器
 ```php
 use hehe\core\hformat\FormatManager;
 
-// 注册日期格式器,别名为 date
-FormatManager::addFormator('date',DateFormator::class);
-
 // 注册类格式器
-FormatManager::addBatchFormator(CommonFormator::class);
+FormatManager::addFormatCollector(CommonFormator::class);
+FormatManager::addFormatCollectors([CommonFormator::class]);
 
 ```
+
+## 字典格式器
+- 说明
+```
+基类: `hehe\core\hformat\base\DictFormator`,继承`hehe\core\hformat\base\Formator`, 字典格式器类必须继承此基类,
+    可重写获取字典数据方法`buildData(Rule $rule,array $datas)`方法
+属性:
+`$id`:字典数据id,如:1
+`$name`:字典数据名称,如:admin
+`$cache`:缓存key,如果两个规则设置了相同的缓存key,则只读取一次字典数据,避免重复读取
+`$data`:获取字典数据方法，格式:[['类名获对象','方法'],'方法参数1','方法参数2','方法参数3'],返回数据格式:[ ['id'=>1,'name'=>'超级管理员'], ['id'=>2,'name'=>'管理员'] ]
+```
+
 
 ## 格式器直接使用
 ```php
@@ -301,7 +367,7 @@ class UrlFormator extends Formator
 
 }
 ```
-- 注解类格式器
+- 注解格式化集合器
 ```php
 use hehe\core\hformat\annotation\AnnFormator;
 /**
@@ -321,7 +387,7 @@ class CommonFormator
 }
 ```
 
-- 注解方法格式器
+- 注解格式化集合器方法
 ```php
 use hehe\core\hformat\annotation\AnnFormator;
 class CommonFormator
@@ -357,7 +423,7 @@ class CommonFormator
 ----------|-------------|------------
 `jsonEncode`  | 数组json | `['fieldname', ['jsonEncode'] ]`
 `jsonDecode`  |json字符串转数组 | `['fieldname', ['jsonDecode'] ]`
-`date`  | 日期格式 | `['fieldname', ['date','format'=>'日期格式'] ]`
+`date`  | 日期格式 | `['fieldname', ['date','params'=>['Y-m-d']] ]`
 `toArr`  | 字符串转数组 | `['fieldname', ['toArr'] ]`
 `trim`  | 字符串去掉两边空格 | `['fieldname', ['trim'] ]`
 `dict`  | 数组列值转换 | `['fieldname', ['dict','id'=>'','name'=>''] ]`

@@ -11,7 +11,8 @@ class UserFormat
         $user = new User();
         return [
             // 状态值转换
-            ['status',[ ['dict','data'=>[[UserDict::class,'showStatus']] ]],'isdef'=>true,'alias'=>':Text'],
+            ['status',[ ['dict','data'=>[[UserDict::class,'showStatus']] ]],'isdef'=>true,'alias'=>':_text'],
+            ['ctime',[['date','params'=>['Y年m月d日 H:i']]],'isdef'=>true ],
             // 头像图片http 转换
             ['headPortrait',[ ['res'] ],'isdef'=>true,'alias'=>'headPortraitUrl'],
 

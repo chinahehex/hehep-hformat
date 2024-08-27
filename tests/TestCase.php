@@ -16,7 +16,7 @@ class TestCase extends \PHPUnit\Framework\TestCase
     {
         $this->hformat = new FormatManager();
 
-        FormatManager::addBatchFormator(ImgFormator::class);
+        FormatManager::addFormatCollector(ImgFormator::class);
     }
 
     // 单个测试之后(每个测试方法之后调用)

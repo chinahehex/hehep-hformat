@@ -4,7 +4,6 @@ namespace hehe\core\hformat;
 use hehe\core\hformat\base\Formator;
 use hehe\core\hformat\base\Rule;
 use hehe\core\hformat\formators\CommonFormator;
-use hehe\core\hformat\formators\DateFormator;
 use hehe\core\hformat\formators\DictFormator;
 
 
@@ -23,16 +22,16 @@ use hehe\core\hformat\formators\DictFormator;
  */
 class FormatManager
 {
-    protected $batchFormators  = [];
-
-    protected $defaultFormators = [
-//        'hehe\core\hformat\formators\CommonFormator',
-//        'hehe\core\hformat\formators\DateFormator',
-//        'hehe\core\hformat\formators\DictFormator'
-    ];
+    protected $bind = true;
 
     /**
-     * 验证类型列表
+     * 格式化集合器
+     * @var array
+     */
+    protected $formatCollectors  = [];
+
+    /**
+     * 格式器列表
      *<B>说明：</B>
      *<pre>
      *　略
@@ -44,8 +43,8 @@ class FormatManager
         'jsonDecode'=>['class'=>'CommonFormator@@jsonDecodeFormator'],
         'toArr'=>['class'=>'CommonFormator@@toArrFormator'],
         'trim'=>['class'=>'CommonFormator@@trimFormator'],
+        'date'=>['class'=>'CommonFormator@@dateFormator'],
         'dict'=>['class'=>'DictFormator'],
-        'date'=>['class'=>'DateFormator'],
     ];
 
     /**
@@ -65,65 +64,37 @@ class FormatManager
             }
         }
 
-        static::addBatchFormators($this->batchFormators);
-        static::addBatchFormators($this->defaultFormators);
+        static::addFormatCollectors($this->formatCollectors);
+
+        if ($this->bind) {
+            Format::$formatManager = $this;
+        }
     }
 
-    protected static function buildCustomFormator(string $formator):array
+    public static function make(array $attrs = [])
     {
-        $formators = [];
-        if (strpos($formator,"@@") !== false) {
-            list($formatorClass,$method) = explode("@@",$formator);
-            $formators = call_user_func([$formatorClass,$method]);
-        } else if (strpos($formator,"@") !== false) {
-            list($formatorClass,$method) = explode("@",$formator);
-            $formators = call_user_func([new $formatorClass(),$method]);
-        } else {
-            $formatorClass = $formator;
-            if (is_subclass_of($formatorClass,Formator::class)) {
-                $formators[lcfirst(substr((new \ReflectionClass($formatorClass))->getShortName(),0,-8))] = $formatorClass;
-            } else {
-                if (method_exists($formatorClass,'handle')) {
-                    $formators = call_user_func([new $formatorClass(),'handle']);
-                }
-            }
-        }
-
-        // 获取格式器方法
-        $reflectionClass = new \ReflectionClass($formatorClass);
-        $reflectionMethods = $reflectionClass->getMethods();
-        foreach ($reflectionMethods as $reflectionMethod) {
-            $method = $reflectionMethod->getName();
-            if (substr($method,-8) === 'Formator') {
-                $method_alias = substr($method,0,-8);
-            } else {
-                $method_alias = $method;
-            }
-
-            $func = $formatorClass . ($reflectionMethod->isStatic() ?  '@@' . $method : '@' . $method);
-            $formators[$method_alias] = $func;
-        }
-
-        return $formators;
+        return new static($attrs);
     }
 
     /**
-     * 添加自定义格式器
-     * @param string $formatorClass
+     * 添加格式化集合器
+     * @param string $formatCollector
+     * @return void
      */
-    public static function addBatchFormator(string $formatorClass):void
+    public static function addFormatCollector(string $formatCollector):void
     {
-        static::$formators = array_merge(static::$formators,static::buildCustomFormator($formatorClass));
+        static::$formators = array_merge(static::$formators,Utils::buildFormatCollector($formatCollector));
     }
 
     /**
-     * 添加自定义格式器
-     * @param string $formatorClass
+     * 添加格式化集合器
+     * @param array $formatorClasss
+     * @return void
      */
-    public static function addBatchFormators(array $formatorClasss):void
+    public static function addFormatCollectors(array $formatCollectors):void
     {
-        foreach ($formatorClasss as $formatorClass) {
-            static::addBatchFormator($formatorClass);
+        foreach ($formatCollectors as $formatCollector) {
+            static::addFormatCollector($formatCollector);
         }
     }
 
@@ -135,7 +106,7 @@ class FormatManager
      *</pre>
      * @param string $alias 格式器别名
      * @param string|array $func 格式函数
-     * @return $this
+     * @return void
      */
     public static function addFormator(string $alias,$func):void
     {
@@ -215,13 +186,14 @@ class FormatManager
         $formatRules = [];
         $dictFormatorData = [];
         foreach ($rules as $ruleConfig) {
-            if (is_array($ruleConfig) && isset($ruleConfig[0], $ruleConfig[1])) {
+            if ($ruleConfig instanceof Rule) {
+                $rule = $ruleConfig;
+            } else if (is_array($ruleConfig) && isset($ruleConfig[0], $ruleConfig[1])) {
                 $rule = new Rule($ruleConfig);
-                $rule->buildFormatorData($datas,$dictFormatorData);
-                $formatRules[] = $rule;
-            } else {
-                throw new \Exception('invalid format rule: a rule must specify both attribute names and format type.');
             }
+
+            $rule->buildFormatorData($datas,$dictFormatorData);
+            $formatRules[] = $rule;
         }
 
         return $formatRules;
@@ -261,7 +233,7 @@ class FormatManager
      * @param array ...$formatRules <格式化规则,格式化允许名称集合>
      * @return array
      */
-    public function format(array $datas = [],array ...$formatRules):array
+    public function doCustomformat(array $datas = [],array ...$formatRules):array
     {
         $ruleList = [];
         foreach ($formatRules as $formatRule) {
@@ -293,18 +265,19 @@ class FormatManager
         }
 
         $validRules = [];
-        foreach ($rules as $rule) {
-            $name = $rule[0];
+        foreach ($rules as $ruleConfig) {
+            $name = $ruleConfig[0];
             if (isset($allowRuleConfig[$name])) {
-                $rule = array_merge($rule,$allowRuleConfig[$name]);
+                $ruleConfig = array_merge($ruleConfig,$allowRuleConfig[$name]);
             }
 
+            $rule = new Rule($ruleConfig);
             if (!empty($allowRuleNames) && in_array($name,$allowRuleNames)) {
                 $validRules[] = $rule;
                 continue;
             }
 
-            if (isset($rule['isdef']) && $rule['isdef'] == true) {
+            if ($rule->isDefault()) {
                 $validRules[] = $rule;
                 continue;
             }

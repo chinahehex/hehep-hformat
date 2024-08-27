@@ -39,6 +39,12 @@ class Rule
      */
     protected $dataid = '';
 
+    /**
+     * 是否默认规则
+     * @var bool
+     */
+    protected $isdef = false;
+
     public function __construct(array $ruleConfig = [])
     {
         $this->formators = $ruleConfig[1];
@@ -63,6 +69,11 @@ class Rule
     public function getName():string
     {
         return $this->name;
+    }
+    
+    public function isDefault():bool
+    {
+        return $this->isdef;
     }
 
     public function getDataId():string

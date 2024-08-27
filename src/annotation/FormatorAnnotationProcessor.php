@@ -11,7 +11,7 @@ use hehe\core\hformat\FormatManager;
  */
 class FormatorAnnotationProcessor extends AnnotationProcessor
 {
-    protected $batchFormators  = [];
+    protected $formatCollectors  = [];
 
     protected $formators = [];
 
@@ -24,7 +24,7 @@ class FormatorAnnotationProcessor extends AnnotationProcessor
                 $this->formators[lcfirst(substr((new \ReflectionClass($class))->getShortName(),0,-8))] = $class;
             }
         } else {
-            $this->batchFormators[] = $class;
+            $this->formatCollectors[] = $class;
         }
     }
 
@@ -47,7 +47,7 @@ class FormatorAnnotationProcessor extends AnnotationProcessor
 
     public function handleProcessorFinish()
     {
-        FormatManager::addBatchFormators($this->batchFormators);
+        FormatManager::addFormatCollectors($this->formatCollectors);
         FormatManager::addFormators($this->formators);
     }
 
