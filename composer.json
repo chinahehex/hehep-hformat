@@ -1,5 +1,5 @@
 {
-	"name": "hehep/hformat",
+	"name": "hehex/hehep-hformat",
 	"description": "hehep-hformat 是一个PHP 格式器工具组件,对数据列的集中处理,减少foreach 循环的编写,可通过自定义方法,满足不同场景以及业务需求,比如状态id转对应名称,http 的转换,统计量,json 字符串转数组等等,重用代码，并节省大量遍历处理的时间,支持多个格式器,支持直接使用格式器,支持添加自定义格式器",
 	"license": "Apache-2.0",
 	"authors": [
