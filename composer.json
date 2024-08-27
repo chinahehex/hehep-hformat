@@ -12,7 +12,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"hehe\\core\\hformat": "src/"
+			"hehe\\core\\hformat\\": "src/"
 		}
 	},
 	"autoload-dev": {
