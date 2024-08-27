@@ -173,7 +173,41 @@ $data = [
 ```
 
 ## 格式化管理器
+- 说明
+```
+类名: `hehe\core\hformat\FormatManager`
+作用:对外提供格式化相关功能，比如:注册格式器,注册预定义格式化集合器,数据格式化
+```
 
+- 示例代码
+```php
+use hehe\core\hformat\FormatManager;
+use hehe\core\hformat\Format;
+
+// 创建格式化管理器
+$hformat = new FormatManager();
+
+// 注册格式器
+FormatManager::addFormator('date',DateFormator::class);
+Format::addFormator('date',DateFormator::class);
+Format::addFormators(['date'=>DateFormator::class]);
+
+// 注册预定义格式化集合器
+FormatManager::addFormatCollector(CommonFormator::class);
+Format::addFormatCollector(CommonFormator::class);
+Format::addFormatCollectors([CommonFormator::class]);
+
+// 执行格式化规则
+$hformat->doFormat([['ctime'=>'2018-01-01 12:00:00']],[
+    ['ctime',[ ['date','params'=>['Y年m月d日 H时i分'] ] ] ],
+]);
+
+// 执行预定义格式化规则
+$hformat->doCustomFormat([['ctime'=>'2018-01-01 12:00:00']],[[
+    ['ctime',[ ['date','params'=>['Y年m月d日 H时i分'] ] ] ],
+],['ctime']]);
+
+```
 
 ## 格式器
 - 说明

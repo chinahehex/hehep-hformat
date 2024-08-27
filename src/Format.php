@@ -15,7 +15,11 @@ namespace hehe\core\hformat;
  * @method string|DictFormator dict($value = '',$params = [])
  * @method string date(string $value,string $format = '')
  * @method array doFormat(array $datas = [],array $rules = [])
- * @method array doCustomformat(array $datas = [],array ...$formatRules):array
+ * @method array doCustomFormat(array $datas = [],array ...$formatRules)
+ * @method void addFormator(string $alias,$func)
+ * @method void addFormators(array $formators)
+ * @method void addFormatCollector(string $formatCollector)
+ * @method void addFormatCollectors(array $formatCollectors):void
  */
 class Format
 {
