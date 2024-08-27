@@ -233,7 +233,7 @@ class FormatManager
      * @param array ...$formatRules <格式化规则,格式化允许名称集合>
      * @return array
      */
-    public function doCustomformat(array $datas = [],array ...$formatRules):array
+    public function doCustomFormat(array $datas = [],array ...$formatRules):array
     {
         $ruleList = [];
         foreach ($formatRules as $formatRule) {

@@ -160,7 +160,7 @@ $users = [
 ];
 
 $hformat = new FormatManager();
-$data = $hformat->doCustomformat($users,[UserFormat::defaultFormat(),['hit_num']]);
+$data = $hformat->doCustomFormat($users,[UserFormat::defaultFormat(),['hit_num']]);
 
 // 输出数据
 $data = [
