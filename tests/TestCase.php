@@ -1,38 +1,38 @@
 <?php
 namespace hformat\tests;
 
-use hehe\core\hformat\FormatManager;
+use hehe\core\hformat\Formation;
 use hformat\tests\common\DefaultFormator;
 use hformat\tests\common\ImgFormator;
 
 class TestCase extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var FormatManager
+     * @var Formation
      */
     protected $hformat;
     // 单个测试之前(每个测试方法之前调用)
-    protected function setUp()
+    protected function setUp():void
     {
-        $this->hformat = new FormatManager();
+        $this->hformat = new Formation();
 
-        FormatManager::addFormatCollector(ImgFormator::class);
+        $this->hformat->addFormatCollectors(ImgFormator::class);
     }
 
     // 单个测试之后(每个测试方法之后调用)
-    protected function tearDown()
+    protected function tearDown():void
     {
 
     }
 
     // 整个测试类之前
-    public static function setUpBeforeClass()
+    public static function setUpBeforeClass():void
     {
 
     }
 
     // 整个测试类之前
-    public static function tearDownAfterClass()
+    public static function tearDownAfterClass():void
     {
 
     }

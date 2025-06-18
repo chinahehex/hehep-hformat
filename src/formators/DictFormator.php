@@ -33,8 +33,11 @@ class DictFormator extends Formator
 
     protected $_data;
 
+    protected $args = [];
+
     public function isDict():bool
     {
+        // 获取方法参数
         return true;
     }
 
@@ -52,14 +55,34 @@ class DictFormator extends Formator
         }
     }
 
+    protected function parseMethod($dataMethod)
+    {
+        $call = [];
+        if (!empty($dataMethod)) {
+            if (is_string($dataMethod)) {
+                if (substr($dataMethod,0,1) === ':') {
+                    $call = substr($dataMethod,1);
+                } else {
+                    $call = Utils::buildFormatorFunc($dataMethod);
+                }
+            }  else if (is_array($dataMethod)) {
+                $call = $dataMethod;
+            } else if ($dataMethod instanceof \Closure) {
+                $call = $dataMethod;
+            }
+        }
+
+        return $call;
+    }
+
     public function buildData(Rule $rule,array $datas):?array
     {
         if (is_null($this->_data)) {
-            $column_values  = Utils::getColumn($datas,$rule->getDataId());
-            $data_func_params = array_slice($this->data, 1);
+            $dataIds  = Utils::getColumn($datas,$rule->getDataId());
+            $args = $this->args;
             // 插入函数参数
-            array_unshift($data_func_params,$column_values);
-            $this->setData(call_user_func_array($this->data[0],$data_func_params));
+            array_unshift($args,$dataIds);
+            $this->setData(call_user_func_array($this->data,$args));
         }
 
         return $this->_data;

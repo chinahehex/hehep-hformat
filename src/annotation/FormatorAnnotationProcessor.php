@@ -3,6 +3,7 @@ namespace hehe\core\hformat\annotation;
 
 use hehe\core\hcontainer\ann\base\AnnotationProcessor;
 use hehe\core\hformat\base\Formator;
+use hehe\core\hformat\Formation;
 use hehe\core\hformat\FormatManager;
 
 /**
@@ -17,12 +18,8 @@ class FormatorAnnotationProcessor extends AnnotationProcessor
 
     public function handleAnnotationClass($annotation,string $class):void
     {
-        if (is_subclass_of($class,Formator::class)) {
-            if (!empty($annotation->alias)) {
-                $this->formators[$annotation->alias] = $class;
-            } else {
-                $this->formators[lcfirst(substr((new \ReflectionClass($class))->getShortName(),0,-8))] = $class;
-            }
+        if (!empty($annotation->alias)) {
+            $this->formators[$annotation->alias] = $class;
         } else {
             $this->formatCollectors[] = $class;
         }
@@ -47,8 +44,8 @@ class FormatorAnnotationProcessor extends AnnotationProcessor
 
     public function handleProcessorFinish()
     {
-        FormatManager::addFormatCollectors($this->formatCollectors);
-        FormatManager::addFormators($this->formators);
+        Formation::addFormatCollectors(...$this->formatCollectors);
+        Formation::addFormators($this->formators);
     }
 
 }

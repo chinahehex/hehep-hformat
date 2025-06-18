@@ -1,7 +1,7 @@
 <?php
 namespace hehe\core\hformat\base;
 
-use hehe\core\hformat\FormatManager;
+use hehe\core\hformat\Formation;
 use hehe\core\hformat\formators\DictFormator;
 
 /**
@@ -16,7 +16,7 @@ class Rule
     protected $name;
 
     /**
-     * 格式器列表
+     * 格式器对象列表
      * @var Formator[]|DictFormator[]
      */
     protected $formators = [];
@@ -57,9 +57,8 @@ class Rule
             }
         }
 
-        $this->buildFormator();
+        $this->createFormators();
     }
-
 
     public function getFormators():array
     {
@@ -70,7 +69,7 @@ class Rule
     {
         return $this->name;
     }
-    
+
     public function isDefault():bool
     {
         return $this->isdef;
@@ -105,14 +104,11 @@ class Rule
         return $this->defval;
     }
 
-    protected function buildFormator()
+    protected function createFormators():void
     {
         $formators =  [];
-        foreach ($this->formators as $formatorArr) {
-            $formatorAlias = $formatorArr[0];
-            $formatorConfig = array_slice($formatorArr, 1);
-            $formator = FormatManager::createFormator($formatorAlias,$formatorConfig);
-            $formators[] = $formator;
+        foreach ($this->formators as $formator) {
+            $formators[] = Formation::makeFormator($formator[0],array_slice($formator, 1));
         }
 
         $this->formators = $formators;
@@ -123,7 +119,7 @@ class Rule
      * @param array $datas
      * @param array $dictFormatorData
      */
-    public function buildFormatorData(array $datas,&$dictFormatorData)
+    public function buildFormatorData(array $datas,&$dictFormatorData):void
     {
         foreach ($this->formators as $formator) {
             if ($formator->isDict()) {

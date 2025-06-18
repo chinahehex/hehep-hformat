@@ -11,7 +11,7 @@ class DefaultFormator
      * @return string
      * @AnnFormator()
      */
-    public static function resFormator(string $value):string
+    public static function hresFormator(string $value):string
     {
         return 'http://www.hehex.cn/' . $value;
     }

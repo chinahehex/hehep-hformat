@@ -1,22 +1,20 @@
 <?php
 namespace hformat\tests\units;
-use hehe\core\hformat\base\Formator;
-use hehe\core\hformat\Format;
-use hehe\core\hformat\formators\CommonFormator;
+use hformat\tests\common\DefaultFormator;
 use hformat\tests\common\User;
 use hformat\tests\common\UserFormat;
-use hformat\tests\common\UserFormator;
 use hformat\tests\TestCase;
+use hehe\core\hformat\Formation;
 
 class ExampleTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp():void
     {
         parent::setUp();
     }
 
     // 单个测试之后(每个测试方法之后调用)
-    protected function tearDown()
+    protected function tearDown():void
     {
         parent::tearDown();
     }
@@ -52,13 +50,13 @@ class ExampleTest extends TestCase
 
     public function testDate1()
     {
-        $value = Format::date('2000-01-01');
+        $value = Formation::date('2000-01-01');
         $this->assertSame('2000-01-01',$value);
 
-        $value = Format::date('2000-01-01','Y');
+        $value = Formation::date('2000-01-01','Y');
         $this->assertSame('2000',$value);
 
-        $value = Format::date('2000-01-01','Y年m月d日');
+        $value = Formation::date('2000-01-01','Y年m月d日');
         $this->assertSame('2000年01月01日',$value);
     }
 
@@ -118,16 +116,16 @@ class ExampleTest extends TestCase
         $user = new User();
         $data = $this->hformat->doFormat($users,[
             // 状态数值转状态文本
-            ['status',[['dict','data'=> [[User::class,'showStatus']] ]], 'alias'=>':_text' ],
+            ['status',[['dict','data'=> [User::class,'showStatus'],'args'=>[] ]], 'alias'=>':_text' ],
             // 日期转换
             ['ctime',[['date','params'=>['Y年m月d日 H:i']]] ],
             // 头像短地址转长地址(http)
             ['headPortrait',[['trim'],['res']], 'alias'=>':_url' ],
             // 获取此id对应访问量
-            ['hit_num',[['dict','name'=>'hit_num','data'=>[[$user, 'totalAdminNewsNum']]]],'dataid'=>'id','alias'=>'hit_num'],
-            ['buy_num',[['dict','name'=>'buy_num','data'=>[[$user, 'totalAdminNewsNum']]]],'dataid'=>'id','alias'=>'buy_num'],
+            ['hit_num',[['dict','name'=>'hit_num','data'=>[$user, 'totalAdminNewsNum'] ]],'dataid'=>'id','alias'=>'hit_num'],
+            ['buy_num',[['dict','name'=>'buy_num','data'=>[$user, 'totalAdminNewsNum'] ]],'dataid'=>'id','alias'=>'buy_num'],
             // 角色ID值转角色名称
-            ['roleId',[['dict','name'=>'roleName','data'=>[[$user, 'getRoles']]]], 'alias'=>'roleName_text']
+            ['roleId',[['dict','name'=>'roleName','data'=>[$user, 'getRoles'] ]], 'alias'=>'roleName_text']
         ]);
 
         //var_dump(var_export($data, true));
@@ -147,7 +145,7 @@ class ExampleTest extends TestCase
             ['id'=>3,'name'=>'hehe3','status'=>3,'ctime'=>'2018-01-01 12:00:00','roleId'=>3,'headPortrait'=>'/a/b/c3.jpg'],
         ];
 
-        $data = $this->hformat->doCustomformat($users,[UserFormat::defaultFormat(),['hit_num','buy_num']]);
+        $data = $this->hformat->doFormat($users,UserFormat::defaultFormat(),['hit_num','buy_num']);
 
         $this->assertSame('2018年01月01日 12:00',$data[0]['ctime']);
         $this->assertSame('禁用',$data[1]['status_text']);
@@ -164,11 +162,22 @@ class ExampleTest extends TestCase
             ['id'=>3,'name'=>'hehe3','status'=>3,'ctime'=>'2018-01-01 12:00:00','roleId'=>3,'headPortrait'=>'/a/b/c3.jpg'],
         ];
 
-        $data = Format::doCustomformat($users,[UserFormat::defaultFormat(),['hit_num','buy_num']]);
+        $data = $this->hformat->doFormat($users,UserFormat::defaultFormat(),['hit_num','buy_num']);
 
         $this->assertSame('2018年01月01日 12:00',$data[0]['ctime']);
         $this->assertSame('禁用',$data[1]['status_text']);
         $this->assertSame('普通用户',$data[2]['roleName_text']);
         $this->assertSame(11,$data[2]['hit_num']);
+    }
+
+    public function testInstall()
+    {
+        Formation::install(DefaultFormator::class);
+
+
+        $url = $this->hformat->hres('1');
+
+        $this->assertTrue($url == 'http://www.hehex.cn/1');
+
     }
 }

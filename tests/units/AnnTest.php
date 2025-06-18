@@ -1,7 +1,7 @@
 <?php
 namespace hformat\tests\units;
 use hehe\core\hcontainer\ContainerManager;
-use hehe\core\hformat\FormatManager;
+use hehe\core\hformat\Formation;
 use hformat\tests\TestCase;
 use hformat\tests\common\DefaultFormator;
 
@@ -12,16 +12,16 @@ class AnnTest extends TestCase
      */
     protected $hcontainer;
 
-    protected function setUp()
+    protected function setUp():void
     {
         parent::setUp();
         $this->hcontainer = new ContainerManager();
-        $this->hcontainer->addScanRule(DefaultFormator::class,FormatManager::class)
+        $this->hcontainer->addScanRule(DefaultFormator::class,Formation::class)
             ->startScan();
     }
 
     // 单个测试之后(每个测试方法之后调用)
-    protected function tearDown()
+    protected function tearDown():void
     {
         parent::tearDown();
     }

@@ -8,10 +8,24 @@ use hehe\core\hformat\base\Formator;
  */
 class CommonFormator
 {
+    public static function stringFormator($value)
+    {
+        return (string)$value;
+    }
 
     public static function trimFormator($value)
     {
         return trim($value);
+    }
+
+    public static function intFormator($value)
+    {
+        return intval($value);
+    }
+
+    public static function floatFormator($value)
+    {
+        return floatval($value);
     }
 
     public static function toArrFormator($value)

@@ -27,11 +27,11 @@ class Formator
      */
     protected $params = [];
 
-    public function __construct(array $attrs = [])
+    public function __construct(array $config = [])
     {
-        if (!empty($attrs)) {
-            foreach ($attrs as $name => $value) {
-                $this->{$name} = $value;
+        if (!empty($config)) {
+            foreach ($config as $key => $value) {
+                $this->$key = $value;
             }
         }
 
@@ -50,7 +50,11 @@ class Formator
         $call = [];
         if (!empty($this->func)) {
             if (is_string($this->func)) {
-                $call = Utils::buildFormatorFunc($this->func);
+                if (substr($this->func,0,1) === ':') {
+                    $call = substr($this->func,1);
+                } else {
+                    $call = Utils::buildFormatorFunc($this->func);
+                }
             }  else if (is_array($this->func)) {
                 $call = $this->func;
             } else if ($this->func instanceof \Closure) {

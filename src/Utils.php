@@ -199,6 +199,7 @@ class Utils
         $newClass = true;
         if (strpos($func,"@@") !== false) {
             list($class,$method) = explode('@@',$func);
+            $newClass = false;
         }  else if (strpos($func,"@") !== false) {
             list($class,$method) = explode('@',$func);
             $newClass = true;
@@ -221,6 +222,8 @@ class Utils
 
     public static function buildFormatCollector(string $formatCollector):array
     {
+        $formatorLen = strlen('formator');
+
         $formators = [];
         if (strpos($formatCollector,"@@") !== false) {
             list($formatorClass,$method) = explode("@@",$formatCollector);
@@ -229,12 +232,16 @@ class Utils
             list($formatorClass,$method) = explode("@",$formatCollector);
             $formators = call_user_func([new $formatorClass(),$method]);
         } else {
+            if (method_exists()) {
+
+            }
+
             $formatorClass = $formatCollector;
             if (is_subclass_of($formatorClass,Formator::class)) {
-                $formators[lcfirst(substr((new \ReflectionClass($formatorClass))->getShortName(),0,-8))] = $formatorClass;
+                $formators[lcfirst(substr((new \ReflectionClass($formatorClass))->getShortName(),0,-$formatorLen))] = $formatorClass;
             } else {
-                if (method_exists($formatorClass,'handle')) {
-                    $formators = call_user_func([new $formatorClass(),'handle']);
+                if (method_exists($formatorClass,'install')) {
+                    $formators = call_user_func([new $formatorClass(),'install']);
                 }
             }
         }
@@ -243,14 +250,58 @@ class Utils
         $reflectionClass = new \ReflectionClass($formatorClass);
         foreach ($reflectionClass->getMethods() as $reflectionMethod) {
             $method = $reflectionMethod->getName();
-            if (substr($method,-8) === 'Formator') {
-                $alias = substr($method,0,-8);
+            if (substr($method,-$formatorLen) === 'Formator') {
+                $alias = substr($method,0,-$formatorLen);
             } else {
                 $alias = $method;
             }
 
             $func = $formatorClass . ($reflectionMethod->isStatic() ?  '@@' . $method : '@' . $method);
             $formators[$alias] = $func;
+        }
+
+        return $formators;
+    }
+
+    /**
+     * 构建格式器
+     * @param string $formator
+     * @return array
+     */
+    public static function buildFormator(string $formator):array
+    {
+        $formatorLen = strlen('formator');
+        $formators = [];
+        if (is_subclass_of($formator,Formator::class)) {
+            // 格式器
+            if (method_exists($formator,'install')) {
+                $formators = call_user_func([$formator,'install']);
+            } else if (strpos($formator,"@@") !== false) {
+                list($formatorClass,$alias) = explode("@@",$formator);
+                $formators[$alias] = $formator;
+            } else if (strpos($formator,"@") !== false) {
+                list($formatorClass,$alias) = explode("@",$formator);
+                $formators[$alias] = $formator;
+            }
+        } else {
+            // 格式化集合器
+            if (method_exists($formator,'install')) {
+                $formators = call_user_func([$formator,'install']);
+            }
+
+            // 读取方法名后缀为"Formator"
+            $reflectionClass = new \ReflectionClass($formator);
+            foreach ($reflectionClass->getMethods() as $reflectionMethod) {
+                $method = $reflectionMethod->getName();
+                if (substr($method,-$formatorLen) === 'Formator') {
+                    $alias = substr($method,0,-$formatorLen);
+                } else {
+                    $alias = $method;
+                }
+
+                $func = $formator . ($reflectionMethod->isStatic() ?  '@@' . $method : '@' . $method);
+                $formators[$alias] = $func;
+            }
         }
 
         return $formators;
